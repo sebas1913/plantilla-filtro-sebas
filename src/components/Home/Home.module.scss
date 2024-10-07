@@ -1,0 +1,25 @@
+.informationContainer{
+    height: 80vh;
+    width: 65%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+
+    .containerLeft{
+        width: 100%;
+        
+        .title{
+            font-size: 4rem;
+        }
+
+        .admiration{
+            font-size: 1.2rem;
+        }
+    }
+
+    .containerRight{
+        width: 50%;
+        display: flex;
+        justify-content: center;
+    }
+}
