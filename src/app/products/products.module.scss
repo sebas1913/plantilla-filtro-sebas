@@ -1,5 +1,14 @@
 .containerProducts{
+    text-align: center;
+
     .title{
-        text-align: center;
+        font-size: 4rem;
+        margin: 1rem;
     }
+}
+
+.containerLanguages{
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
 }

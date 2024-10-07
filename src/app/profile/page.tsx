@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import styles from './profile.module.scss'
+import styled from "styled-components";
 
 
-
-
-const ProfilePage: React.FC = () =>{
+const ProfilePage: React.FC = () => {
     const { data: session, status } = useSession();
     const router = useRouter();
 
@@ -15,14 +15,22 @@ const ProfilePage: React.FC = () =>{
             router.push("/");
         } else if (status === "authenticated") {
             console.log(session);
-            
+
         }
     }, [status, router]);
 
-    return(
-        <div>
-            <h1>Perfil de usuario</h1>
-        </div>
+
+    return (
+        <>
+            <div className={styles.containerProfile}>
+                <h1 className={styles.title}>Perfil de usuario</h1>
+                <div className={styles.containerInfo}>
+                    <p><b>Nombre completo:</b> {session?.user.name}</p>
+                    <p><b>Correo electrónico:</b> {session?.user.email}</p>
+                    <p><b>Nombre de usuario:</b> {session?.user.username}</p>
+                </div>
+            </div>
+        </>
     )
 }
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from 'next-intl';
-// import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages } from "next-intl/server";
 import { Raleway } from "next/font/google";
 import SessionProviderWrapper from "@/components/provider/SessionProviderWrapper";
 import Navbar from "@/components/Navbar/Navbar";
@@ -15,30 +15,27 @@ export const metadata: Metadata = {
   description: "",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
 
-  // Obtener el idioma y los mensajes de traducción
-  // const locale = await getLocale(); 
-  // const messages = await getMessages(); // Pasamos el locale para obtener los mensajes correctos
+  const locale = await getLocale(); 
+  const messages = await getMessages(); 
 
   return (
-    // <html lang={locale}>
-
-    <html lang="es">
+    <html lang={locale}>
       <body className={raleway.className}>
         <SessionProviderWrapper>
-          {/* <NextIntlClientProvider locale={locale} messages={messages}> */}
+          <NextIntlClientProvider locale={locale} messages={messages}>
             <Navbar />
             <main>
             {children}
 
             </main>
             < Footer />
-          {/* </NextIntlClientProvider> */}
+          </NextIntlClientProvider>
         </SessionProviderWrapper>
       </body>
     </html>

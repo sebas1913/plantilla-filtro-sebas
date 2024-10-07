@@ -146,6 +146,10 @@ const Navbar: React.FC = () => {
         }
     };
 
+    const redirectViewProfile = () =>{
+        router.push('/profile');
+    }
+
 
 
     return (
@@ -156,11 +160,11 @@ const Navbar: React.FC = () => {
                     <>
                         <h1>RIWI STORE</h1>
                         <div>
-                            <StyledButton type="button">
+                            <StyledButton type="button" onClick={redirectViewProfile}>
                                 < FaUser size={25} />
                             </StyledButton>
                             <StyledButton type="button" onClick={async () => await signOut()}>
-                                < CiLogout size={25} />
+                                < CiLogout size={25}/>
                             </StyledButton>
                         </div>
                     </>

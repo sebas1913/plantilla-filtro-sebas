@@ -2,15 +2,31 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import styles from './products.module.scss'
+import Cookies from "js-cookie"; 
+import styled from "styled-components";
+import styles from './products.module.scss';
+import Spinner from "@/components/Spinner/Spinner";
+import Card from "@/components/Card/Card";
+import Button from "@/components/UI/Button/Button";
 
 
-const ProductsPage: React.FC = () =>{
+const StyledButtonLang = styled(Button)`
+    margin: 0.2rem;
+    width: 3rem;
+    padding: 0.6rem;
+    color: var(--tertiary-color);
+    background: var(--primary-color);
+`
+
+
+const ProductsPage: React.FC = () => {
     const { data: session, status } = useSession();
     const [loading, setLoading] = useState<boolean>(true);
     const [products, setProducts] = useState<any[]>([]);
     const router = useRouter();
-    
+    const [language, setLanguage] = useState<string>('en');
+    const [texts, setTexts] = useState<any>({});
+
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -18,9 +34,22 @@ const ProductsPage: React.FC = () =>{
         } else if (status === "authenticated") {
             fetchProducts();
             console.log(fetchProducts);
-            
+
         }
     }, [status, router]);
+
+    const loadLanguage = () => {
+        const lang = Cookies.get('language') || 'es';
+        setLanguage(lang);
+        fetch(`/messages/${lang}.json`)
+            .then(response => response.json())
+            .then(data => setTexts(data));
+    };
+
+    const changeLanguage = (lang: string): void => {
+        Cookies.set('language', lang, { expires: 30 });
+        loadLanguage();
+    };
 
 
     const fetchProducts = async (): Promise<void> => {
@@ -28,7 +57,7 @@ const ProductsPage: React.FC = () =>{
 
         try {
             const response = await fetch("/api/products", {
-                method: 'GET', 
+                method: 'GET',
                 headers: {
                     Authorization: `Bearer ${session!.accessToken}`,
                     'Content-Type': 'application/json',
@@ -36,8 +65,8 @@ const ProductsPage: React.FC = () =>{
             });
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
-                
+                setProducts(data)
+
             } else {
                 console.error("Error fetching products:", response.statusText);
             }
@@ -48,10 +77,27 @@ const ProductsPage: React.FC = () =>{
         }
     };
 
-    return(
-        <div className={styles.containerProducts}>
-            <h1 className={styles.title}>Products</h1>
-        </div>
+    if (status === "loading" || loading) {
+        return <Spinner />;
+    }
+
+
+    return (
+        <>
+            <div className={styles.containerProducts}>
+                <h1 className={styles.title}>{texts.title}</h1>
+                {products.map((product) => (
+                    <Card
+                        key={product.id}
+                        product={product}
+                    />
+                ))}
+            </div>
+            <div className={styles.containerLanguages}>
+                <StyledButtonLang type="button" onClick={() => changeLanguage('es')}>ES</StyledButtonLang>
+                <StyledButtonLang type="button" onClick={() => changeLanguage('en')}>EN</StyledButtonLang>
+            </div>
+        </>
     )
 }
 
