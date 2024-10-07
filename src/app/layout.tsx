@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import { NextIntlClientProvider } from 'next-intl';
+import { NextIntlClientProvider } from 'next-intl';
 // import { getLocale, getMessages } from "next-intl/server";
 import { Raleway } from "next/font/google";
 import SessionProviderWrapper from "@/components/provider/SessionProviderWrapper";
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description: "",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -33,7 +33,10 @@ export default async function RootLayout({
         <SessionProviderWrapper>
           {/* <NextIntlClientProvider locale={locale} messages={messages}> */}
             <Navbar />
+            <main>
             {children}
+
+            </main>
             < Footer />
           {/* </NextIntlClientProvider> */}
         </SessionProviderWrapper>

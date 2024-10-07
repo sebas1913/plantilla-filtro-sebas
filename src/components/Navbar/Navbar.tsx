@@ -9,6 +9,8 @@ import Input from '../UI/Input/Input';
 import Modal from "../Modal/Modal";
 import Form from "../Form/Form";
 import { CiLogout } from "react-icons/ci";
+import { FaUser } from "react-icons/fa";
+
 
 
 const StyledButton = styled(Button)`
@@ -23,23 +25,26 @@ const StyledButton = styled(Button)`
 const Navbar: React.FC = () => {
     const { data: session, status } = useSession();
     const router = useRouter();
-    //Form de login
     const [modalLoginVisible, setModalLoginVisible] = useState(false);
-    const [selectedEmailLogin, setSelectedEmailLogin] = useState('');
+    const [selectedUsernameLogin, setSelectedUsernameLogin] = useState('');
     const [selectedPasswordLogin, setSelectedPasswordLogin] = useState('');
 
-    //Form de registro
     const [modalRegisterVisible, setModalRegisterVisible] = useState(false);
     const [selectedEmailRegister, setSelectedEmailRegister] = useState('');
     const [selectedNameRegister, setSelectedNameRegister] = useState('');
+    const [selectedUsernameRegister, setSelectedUsernameRegister] = useState('');
     const [selectedPasswordRegister, setSelectedPasswordRegister] = useState('');
+    const [selectedPhoneRegister, setSelectedPhoneRegister] = useState('');
 
-    // Función para mostrar y ocultar modal de login
     const toggleModalLogin = () => {
         setModalLoginVisible(!modalLoginVisible);
     };
 
-    // Manejar los cambios en el input del Register
+    const toggleModalRegister = () => {
+        setModalRegisterVisible(!modalRegisterVisible);
+    };
+
+
     const handleChangeNameRegister = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedNameRegister(event.target.value);
     };
@@ -52,27 +57,29 @@ const Navbar: React.FC = () => {
         setSelectedPasswordRegister(event.target.value);
     };
 
-    const toggleModalRegister = () => {
-        setModalRegisterVisible(!modalRegisterVisible);
-    };
+    const handleChangeUsernameRegister = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedUsernameRegister(event.target.value);
+    }
 
-    // Manejar los cambios en el input del login
-    const handleChangeEmailLogin = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedEmailLogin(event.target.value);
+    const handleChangePhoneRegister = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedPhoneRegister(event.target.value);
+    }
+
+
+    const handleChangeUsernameLogin = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedUsernameLogin(event.target.value);
     };
 
     const handleChangePasswordLogin = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedPasswordLogin(event.target.value);
     };
 
-    // Envío del formulario de login
     const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Método signIn para autenticar el usuario
         const result = await signIn("credentials", {
             redirect: false,
-            email: selectedEmailLogin,
+            username: selectedUsernameLogin,
             password: selectedPasswordLogin
         });
 
@@ -85,14 +92,12 @@ const Navbar: React.FC = () => {
         } else {
             console.log("Inicio de sesión exitoso");
 
-            // Verifica si establecimos bien la session
             const session = await getSession();
 
-            // Si la sesión está disponible, redirigimos
             if (session) {
-                router.push("/posts");
+                router.push("/products");
                 setModalLoginVisible(false);
-                setSelectedEmailLogin('');
+                setSelectedUsernameLogin('');
                 setSelectedPasswordLogin('');
             } else {
                 console.error("No se pudo obtener la sesión después del inicio de sesión.");
@@ -103,10 +108,10 @@ const Navbar: React.FC = () => {
 
 
     const handleRegisterSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); 
-    
+        e.preventDefault();
+
         try {
-            const response = await fetch("/api/register", {
+            const response = await fetch("/api/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -115,53 +120,60 @@ const Navbar: React.FC = () => {
                     name: selectedNameRegister,
                     email: selectedEmailRegister,
                     password: selectedPasswordRegister,
+                    username: selectedUsernameRegister,
+                    phone: selectedPhoneRegister
                 }),
             });
-    
+
             if (!response.ok) {
                 const errorData = await response.json();
                 console.log("Error en el registro:", errorData.message);
                 alert(`Error en el registro: ${errorData.message}`);
                 return;
             }
-    
+
             const data = await response.json();
             alert("Usuario registrado exitosamente :)");
-            toggleModalRegister(); // Cerrar el modal de registro
-    
-            // Limpiar los campos después del registro
+            toggleModalRegister(); 
+
             setSelectedNameRegister('');
             setSelectedEmailRegister('');
             setSelectedPasswordRegister('');
-            
+
         } catch (error) {
             console.error("Error al registrar:", error);
             alert("Ocurrió un error al registrar. Por favor, intenta de nuevo.");
         }
     };
-    
+
 
 
     return (
         <>
             <nav className={styles.StyledNav}>
                 {status === "authenticated" ? (
+
                     <>
                         <h1>RIWI STORE</h1>
-                        <StyledButton type="button" onClick={async () => await signOut()}>
-                            < CiLogout size={30}/>
-                        </StyledButton>
+                        <div>
+                            <StyledButton type="button">
+                                < FaUser size={25} />
+                            </StyledButton>
+                            <StyledButton type="button" onClick={async () => await signOut()}>
+                                < CiLogout size={25} />
+                            </StyledButton>
+                        </div>
                     </>
                 ) : (
                     <>
                         <h1>RIWI STORE</h1>
                         <div>
-                        <StyledButton type="button" onClick={toggleModalLogin}>
-                            Iniciar sesión
-                        </StyledButton>
-                        <StyledButton type="button" onClick={toggleModalRegister}>
-                            Registrarse
-                        </StyledButton>
+                            <StyledButton type="button" onClick={toggleModalLogin}>
+                                Iniciar sesión
+                            </StyledButton>
+                            <StyledButton type="button" onClick={toggleModalRegister}>
+                                Registrarse
+                            </StyledButton>
                         </div>
                     </>
                 )}
@@ -174,11 +186,11 @@ const Navbar: React.FC = () => {
                         <Form onSubmit={handleLoginSubmit}>
                             <h1>Iniciar sesión</h1>
                             <Input
-                                type="email"
-                                name="email"
-                                value={selectedEmailLogin}
-                                onChange={handleChangeEmailLogin}
-                                placeholder="Correo electrónico"
+                                type="text"
+                                name="username"
+                                value={selectedUsernameLogin}
+                                onChange={handleChangeUsernameLogin}
+                                placeholder="Nombre de usuario"
                             />
                             <Input
                                 type="password"
@@ -194,33 +206,47 @@ const Navbar: React.FC = () => {
                     </Modal>
 
                     <Modal isVisible={modalRegisterVisible} onClose={toggleModalRegister}>
-                    <Form onSubmit={handleRegisterSubmit}>
-                        <h1>Regístrate</h1>
-                        <Input
-                            type="text"
-                            name="name"
-                            value={selectedNameRegister}
-                            onChange={handleChangeNameRegister}
-                            placeholder="Nombre"
-                        />
-                        <Input
-                            type="email"
-                            name="email"
-                            value={selectedEmailRegister}
-                            onChange={handleChangeEmailRegister}
-                            placeholder="Correo electrónico"
-                        />
-                        <Input
-                            type="password"
-                            name="password"
-                            value={selectedPasswordRegister}
-                            onChange={handleChangePasswordRegister}
-                            placeholder="Contraseña"
-                        />
-                        <div className={styles.StyledContainerButton}>
-                            <StyledButton type="submit">Enviar</StyledButton>
-                        </div>
-                    </Form>
+                        <Form onSubmit={handleRegisterSubmit}>
+                            <h1>Regístrate</h1>
+                            <Input
+                                type="text"
+                                name="name"
+                                value={selectedNameRegister}
+                                onChange={handleChangeNameRegister}
+                                placeholder="Nombre completo"
+                            />
+                            <Input
+                                type="email"
+                                name="email"
+                                value={selectedEmailRegister}
+                                onChange={handleChangeEmailRegister}
+                                placeholder="Correo electrónico"
+                            />
+                            <Input
+                                type="text"
+                                name="username"
+                                value={selectedUsernameRegister}
+                                onChange={handleChangeUsernameRegister}
+                                placeholder="Nombre de usuario"
+                            />
+                            <Input
+                                type="password"
+                                name="password"
+                                value={selectedPasswordRegister}
+                                onChange={handleChangePasswordRegister}
+                                placeholder="Contraseña"
+                            />
+                            <Input
+                                type="text"
+                                name="phone"
+                                value={selectedPhoneRegister}
+                                onChange={handleChangePhoneRegister}
+                                placeholder="Teléfono"
+                            />
+                            <div className={styles.StyledContainerButton}>
+                                <StyledButton type="submit">Enviar</StyledButton>
+                            </div>
+                        </Form>
                     </Modal>
                 </>
             )}
