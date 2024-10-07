@@ -132,7 +132,6 @@ const Navbar: React.FC = () => {
                 return;
             }
 
-            const data = await response.json();
             alert("Usuario registrado exitosamente :)");
             toggleModalRegister(); 
 
