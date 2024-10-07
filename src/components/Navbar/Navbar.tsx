@@ -157,7 +157,7 @@ const Navbar: React.FC = () => {
                 {status === "authenticated" ? (
 
                     <>
-                        <h1>RIWI STORE</h1>
+                        <h1 onClick={() => router.push('/products')}>RIWI STORE</h1>
                         <div>
                             <StyledButton type="button" onClick={redirectViewProfile}>
                                 < FaUser size={25} />
