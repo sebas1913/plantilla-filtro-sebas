@@ -1,1 +1,1 @@
-export const URL_BASE = 'https://api-coders-advanced-route-production.up.railway.app'
+export const URL_BASE = 'http://192.168.88.39:7000'
