@@ -9,7 +9,7 @@ import Spinner from "@/components/Spinner/Spinner";
 import Card from "@/components/Card/Card";
 import Button from "@/components/UI/Button/Button";
 import { URL_BASE } from "../../../URL_BASE";
-
+import Input from "@/components/UI/Input/Input";
 
 const StyledButtonLang = styled(Button)`
     margin: 0.2rem;
@@ -17,13 +17,20 @@ const StyledButtonLang = styled(Button)`
     padding: 0.6rem;
     color: var(--tertiary-color);
     background: var(--primary-color);
-`
+`;
 
+const StyledButtonSearch = styled(Button)`
+    margin: 0.5rem;
+    padding: 0.7rem;
+    background: var(--primary-color);
+    color: var(--tertiary-color);
+`;
 
 const ProductsPage: React.FC = () => {
     const { data: session, status } = useSession();
     const [loading, setLoading] = useState<boolean>(true);
     const [products, setProducts] = useState<any[]>([]);
+    const [searchId, setSearchId] = useState<string>('');
     const router = useRouter();
     const [language, setLanguage] = useState<string>('en');
     const [texts, setTexts] = useState<any>({});
@@ -51,7 +58,6 @@ const ProductsPage: React.FC = () => {
         loadLanguage();
     };
 
-
     const fetchProducts = async (): Promise<void> => {
         setLoading(true);
 
@@ -65,8 +71,7 @@ const ProductsPage: React.FC = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setProducts(data)
-
+                setProducts(data);
             } else {
                 console.error("Error fetching products:", response.statusText);
             }
@@ -99,16 +104,56 @@ const ProductsPage: React.FC = () => {
         }
     };
 
+    const fetchProductById = async (productId: string): Promise<void> => {
+        try {
+            const response = await fetch(`${URL_BASE}/auth/products/${productId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${session!.accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`El producto encontrado es: ${JSON.stringify(data.title)}`); 
+            } else {
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error("Error :( ", error);
+        }
+    };
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchId) {
+            fetchProductById(searchId);
+        }
+    };
 
     if (status === "loading" || loading) {
         return <Spinner />;
     }
 
-
     return (
         <>
             <div className={styles.containerProducts}>
                 <h1 className={styles.title}>{texts.title}</h1>
+                <p>{texts.welcome}</p>
+
+                <form onSubmit={handleSearch}>
+                    <Input
+                        name="ID"
+                        type="text" 
+                        placeholder="Buscar por ID de producto"
+                        value={searchId}
+                        onChange={(e) => setSearchId(e.target.value)}
+                    />
+                    <StyledButtonSearch type="submit">Buscar</StyledButtonSearch>
+                </form>
+
                 {products.map((product) => (
                     <Card
                         key={product.id}
@@ -122,7 +167,7 @@ const ProductsPage: React.FC = () => {
                 <StyledButtonLang type="button" onClick={() => changeLanguage('en')}>EN</StyledButtonLang>
             </div>
         </>
-    )
-}
+    );
+};
 
 export default ProductsPage;

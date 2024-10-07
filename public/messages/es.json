@@ -1,5 +1,6 @@
 {
     "title": "Productos",
     "category": "Categoría",
-    "Price": "Precio"
+    "Price": "Precio",
+    "welcome": "Bienvenido, a continuación podrás visualizar los productos más vendidos:"
 }
