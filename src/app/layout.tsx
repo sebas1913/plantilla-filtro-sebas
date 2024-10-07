@@ -11,8 +11,8 @@ import "../styles/globals.css";
 const raleway = Raleway({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Simulacro",
-  description: "",
+  title: "Prueba",
+  description: "Prueba Sebastián Osorno C",
 };
 
 export default async function RootLayout({
