@@ -183,7 +183,6 @@ const Navbar: React.FC = () => {
                 )}
             </nav>
 
-            {/* Modal de inicio de sesión */}
             {!session && (
                 <>
                     <Modal isVisible={modalLoginVisible} onClose={toggleModalLogin}>

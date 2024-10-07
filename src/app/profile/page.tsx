@@ -1,9 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styles from './profile.module.scss'
-import styled from "styled-components";
 
 
 const ProfilePage: React.FC = () => {
