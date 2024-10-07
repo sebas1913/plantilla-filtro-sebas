@@ -1,6 +1,5 @@
 {
     "title": "Productos",
-    "create": "Crear",
-    "updatePost": "Actualizar",
-    "update": "Actualizar"
+    "category": "Categoría",
+    "Price": "Precio"
 }

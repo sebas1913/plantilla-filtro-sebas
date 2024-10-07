@@ -19,7 +19,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     }
 
     const data = await response.json();
-    return NextResponse.json(data, { status: 201 });
+    return NextResponse.json(data, { status: 200 });
   } catch (error: unknown) {
     return NextResponse.json({ error: 'Error fetching products', details: error }, { status: 500 });
   }

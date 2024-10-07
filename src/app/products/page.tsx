@@ -8,6 +8,7 @@ import styles from './products.module.scss';
 import Spinner from "@/components/Spinner/Spinner";
 import Card from "@/components/Card/Card";
 import Button from "@/components/UI/Button/Button";
+import { URL_BASE } from "../../../URL_BASE";
 
 
 const StyledButtonLang = styled(Button)`
@@ -33,8 +34,7 @@ const ProductsPage: React.FC = () => {
             router.push("/");
         } else if (status === "authenticated") {
             fetchProducts();
-            console.log(fetchProducts);
-
+            loadLanguage();
         }
     }, [status, router]);
 
@@ -77,6 +77,29 @@ const ProductsPage: React.FC = () => {
         }
     };
 
+    const fetchLikes = async (productId: string): Promise<void> => {
+        try {
+            const response = await fetch(`${URL_BASE}/auth/products/${productId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session!.accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message); 
+            } else {
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error("Error :( ", error);
+        }
+    };
+
+
     if (status === "loading" || loading) {
         return <Spinner />;
     }
@@ -90,6 +113,7 @@ const ProductsPage: React.FC = () => {
                     <Card
                         key={product.id}
                         product={product}
+                        onLike={() => fetchLikes(product.id)}
                     />
                 ))}
             </div>
